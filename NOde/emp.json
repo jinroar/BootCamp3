@@ -1,0 +1,98 @@
+
+[
+  {
+     "firstName": "Jane",
+     "lastName": "Doe",
+     "birthDate": "2001/11/1",
+     "occupation": {
+        "name": "Artist",
+        "address": "9562 SW. Summit Road Chesterton, IN 46304n" 
+     } ,
+     "children": [
+       {
+          "firstName": "Janedough",
+          "lastName": "Doe"
+       }
+     ]
+  },
+  {
+    "firstName": "Mari",
+    "lastName": "Baxter",
+    "birthDate": "2000/11/1",
+    "occupation": {
+       "name": "Scientist",
+       "address": "87 East Rd. Smyrna, GA 30080" 
+    } ,
+    "children": [
+      {
+         "firstName": "",
+         "lastName": ""
+      }
+    ]
+ },
+ {
+    "firstName": "Kieron",
+    "lastName": "Contreras",
+    "birthDate": "1999/11/1",
+    "occupation": {
+       "name": "Project Manager",
+       "address": "B713 Cherry Hill Street Hastings, MN 55033" 
+    } ,
+    "children": [
+      {
+         "firstName": "Cain",
+         "lastName": "Contreras"
+      },
+      {
+        "firstName": "Abel",
+        "lastName": "Contreras"
+     },
+     {
+       "firstName": "Bob",
+       "lastName": "Contreras"
+    }
+    ]
+ },
+ {
+    "firstName": "Chaim",
+    "lastName": "Rhodes",
+    "birthDate": "1998/11/1",
+    "occupation": {
+       "name": "Client Support Specialist",
+       "address": "33 Oakwood St. Anderson, SC 29621" 
+    } ,
+    "children": [
+      {
+         "firstName": "Red",
+         "lastName": "Rhodes"
+      },
+      {
+        "firstName": "Riot",
+        "lastName": "Rhodes"
+     },
+     {
+       "firstName": "Rockstar",
+       "lastName": "Rhodes"
+    }
+    ]
+ },
+ {
+    "firstName": "Velma",
+    "lastName": "Reeves",
+    "birthDate": "1997/11/1",
+    "occupation": {
+       "name": "Client Support Specialist",
+       "address": "7 W. Miles Dr. Dayton, OH 45420" 
+    } ,
+    "children": [
+      {
+         "firstName": "Venoser",
+         "lastName": "Reeves"
+      },
+      {
+        "firstName": "Vulbaser",
+        "lastName": "Reeves"
+     }
+    ]
+ }  
+]

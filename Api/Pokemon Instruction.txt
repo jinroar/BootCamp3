@@ -1,0 +1,14 @@
+Activity:
+ 
+Using pokeapi, list the first 50 pokemons and their types.
+https://pokeapi.co/api/v2/pokemon?limit=50
+ 
+Expected Results:
+   Name: pikachu
+   Types:
+      1. electric
+      2. ...
+   Moves:
+     1. move_name, 
+         hit_rate:
+         flavor_text_entries:  english only, select first entry
