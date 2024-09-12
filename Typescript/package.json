@@ -1,8 +1,19 @@
 {
   "dependencies": {
-    "lodash": "^4.17.21"
+    "@types/prompt-sync": "^4.2.3",
+    "lodash": "^4.17.21",
+    "nodemon": "^3.1.4",
+    "prompt-sync": "^4.2.0",
+    "prompt-sync-history": "^1.0.1"
   },
   "devDependencies": {
-    "@types/lodash": "^4.17.7"
+    "@types/lodash": "^4.17.7",
+    "press-any-key": "^1.0.0",
+    "ts-node": "^10.9.2"
+  },
+  "scripts": {
+    "compile": "npx tsc poke.ts && node poke.js",
+    "compile2": "npx tsc battle.ts && node battle.js",
+    "prompt-sync": "ts-node scripts/prompt-sync.ts"
   }
 }
