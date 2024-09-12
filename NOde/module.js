@@ -1,0 +1,5 @@
+//Module
+
+module.exports =  {
+    science: '🧫'
+}
