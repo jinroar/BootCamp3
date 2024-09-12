@@ -52,14 +52,13 @@ function error_pause(error) {
     });
 }
 var Battle = function () { return __awaiter(_this, void 0, void 0, function () {
-    //input pokemon 1
     function First_Page() {
         return __awaiter(this, void 0, void 0, function () {
             var poke1, response, data, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        Title(); // heading
+                        Title(); // call heading
                         poke1 = prompt("Enter your pokemon [ex. charizard]: ");
                         if (!Number(poke1)) return [3 /*break*/, 1];
                         return [2 /*return*/, " PRESS [2] and ENTER a VALID POKEMON!!\n"];
@@ -75,19 +74,18 @@ var Battle = function () { return __awaiter(_this, void 0, void 0, function () {
                     case 4:
                         error_1 = _a.sent();
                         error_pause(1);
-                        return [2 /*return*/, " PRESS [2] and ENTER a VALID POKEMON!!\n"];
-                    case 5: return [2 /*return*/, poke1];
+                        return [2 /*return*/, " PRESS [2] and ENTER a VALID POKEMON!!\n"]; // Error return 'notice'
+                    case 5: return [2 /*return*/, poke1]; // 'poke1`
                 }
             });
         });
     }
-    //input pokemon 2
     function Second_Page(poke1, poke2) {
         return __awaiter(this, void 0, void 0, function () {
             var choice;
             return __generator(this, function (_a) {
-                Title();
-                console.log(" > Chosen Pokemon: ".concat(poke1, "  \n > Opposing Pokemon: ").concat(poke2, "\n        [1.] Choose your opposing pokemon:\n        [2.] Change Pokemon\n        [3.] Exit"));
+                Title(); // 2nd Page Menu 
+                console.log(" > Chosen Pokemon: ".concat(poke1, "  \n > Opposing Pokemon: ").concat(poke2, " \n        [1.] Choose your opposing pokemon:\n        [2.] Change Pokemon\n        [3.] Exit"));
                 choice = prompt(" >> ");
                 return [2 /*return*/, choice];
             });
@@ -102,7 +100,7 @@ var Battle = function () { return __awaiter(_this, void 0, void 0, function () {
                         poke2 = prompt("Enter your opposing pokemon [ex. charizard]: ");
                         if (!Number(poke2)) return [3 /*break*/, 1];
                         error_pause(1);
-                        return [2 /*return*/, " PRESS [2] and ENTER a VALID POKEMON!!\n"];
+                        return [2 /*return*/, " PRESS [1] and ENTER a VALID POKEMON!!\n"]; // Error return 'notice'
                     case 1:
                         _a.trys.push([1, 4, , 5]);
                         return [4 /*yield*/, fetch("https://pokeapi.co/api/v2/pokemon/".concat(poke2))];
@@ -115,12 +113,12 @@ var Battle = function () { return __awaiter(_this, void 0, void 0, function () {
                     case 4:
                         error_2 = _a.sent();
                         error_pause(1);
-                        return [2 /*return*/, Second_Page(poke1, "PRESS [1] and ENTER a VALID INPUT!!\n")];
-                    case 5: return [2 /*return*/, poke2];
+                        return [2 /*return*/, Second_Page(poke1, "PRESS [1] and ENTER a VALID INPUT!!\n")]; // Error return 'notice'
+                    case 5: return [2 /*return*/, poke2]; // Note: Functions are fragmented for errorhandling
                 }
             });
         });
-    }
+    } // Start of While loop
     var prompt, flag, poke1, choice, poke2, response, data, response2, data2, pokestats1, pokestats2;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -141,7 +139,6 @@ var Battle = function () { return __awaiter(_this, void 0, void 0, function () {
             case 4:
                 poke2 = _a.sent();
                 if (!(poke2 != undefined)) return [3 /*break*/, 9];
-                console.log("".concat(poke1, " vs ").concat(poke2, " rawrrawrrawr"));
                 return [4 /*yield*/, fetch("https://pokeapi.co/api/v2/pokemon/".concat(poke1))];
             case 5:
                 response = _a.sent();
@@ -154,50 +151,42 @@ var Battle = function () { return __awaiter(_this, void 0, void 0, function () {
                 return [4 /*yield*/, response2.json()];
             case 8:
                 data2 = _a.sent();
-                pokestats1 = {
-                    name: poke1,
-                    hp: data.stats[0].base_stat,
-                    atk: data.stats[1].base_stat,
-                };
-                pokestats2 = {
-                    name: poke2,
-                    hp: data2.stats[0].base_stat,
-                    atk: data2.stats[1].base_stat,
-                };
+                pokestats1 = { name: poke1, hp: data.stats[0].base_stat, atk: data.stats[1].base_stat };
+                pokestats2 = { name: poke2, hp: data2.stats[0].base_stat, atk: data2.stats[1].base_stat };
+                console.log("\n\n".concat(poke1, " vs ").concat(poke2, "  rawrrawrrawr")); //Display stats
                 getStats(pokestats1);
                 getStats(pokestats2);
-                if (pokestats1.atk == pokestats2.atk &&
-                    pokestats1.hp == pokestats2.hp) {
-                    console.log("DRAW!!");
+                if (pokestats1.atk == pokestats2.atk && pokestats1.hp == pokestats2.hp) {
+                    console.log("DRAW!!\n\n"); // Start of Fight Conditions
                 }
                 else if ((pokestats1.atk > pokestats2.hp && pokestats2.atk > pokestats1.hp) ||
                     (pokestats1.atk == pokestats2.atk && pokestats1.hp == pokestats2.hp)) {
-                    console.log("DRAW!!");
+                    console.log("DRAW!!\n\n");
                 }
                 else if (pokestats1.atk > pokestats2.hp) {
-                    console.log("\n            ".concat(poke1, " WINS!!"));
+                    console.log(" ".concat(poke1, " WINS!!\n\n"));
                 }
                 else if (pokestats2.atk > pokestats1.hp) {
-                    console.log("".concat(poke2, " WINS!!"));
+                    console.log("".concat(poke2, " WINS!!\n\n"));
                 }
                 else {
-                    console.log("DRAW!!");
-                }
+                    console.log("DRAW!!\n\n");
+                } // End of Fight Conditions
                 return [3 /*break*/, 10];
             case 9:
                 error_pause(1);
                 _a.label = 10;
             case 10:
-                error_pause(0);
+                error_pause(0); // End of Choice 1
                 return [3 /*break*/, 12];
             case 11:
                 if (choice == "2") {
-                    return [3 /*break*/, 1];
+                    return [3 /*break*/, 1]; //Back to First Page 
                 }
                 else if (choice == "3") {
                     console.log("BYE BYE!!");
                     process.exit(0);
-                }
+                } // Exit
                 _a.label = 12;
             case 12: return [3 /*break*/, 1];
             case 13: return [2 /*return*/];
