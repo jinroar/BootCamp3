@@ -118,7 +118,7 @@ var Battle = function () { return __awaiter(_this, void 0, void 0, function () {
                 }
             });
         });
-    } // Start of While loop
+    }
     var prompt, flag, poke1, choice, poke2, response, data, response2, data2, pokestats1, pokestats2;
     return __generator(this, function (_a) {
         switch (_a.label) {
