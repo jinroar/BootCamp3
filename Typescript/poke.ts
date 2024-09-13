@@ -94,8 +94,7 @@ const Battle = async () => {                                // Main function
             } else { error_pause(1); } // Pause then Back to First Page
                 error_pause(0);   // End of Choice 1
             } else if (choice == "2") {  continue;  //Back to First Page 
-            } else if (choice == "3") {  console.log(`BYE BYE!!`);
-               process.exit(0); } // Exit
+            } else if (choice == "3") {  console.log(`BYE BYE!!`); process.exit(0); } // Exit
     }// End of While loop
 };
 Battle();
