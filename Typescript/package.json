@@ -12,7 +12,7 @@
     "ts-node": "^10.9.2"
   },
   "scripts": {
-    "compile": "npx tsc poke.ts && node poke.js",
+    "poke": "npx tsc poke.ts && node poke.js",
     "prompt-sync": "ts-node scripts/prompt-sync.ts"
   }
 }
