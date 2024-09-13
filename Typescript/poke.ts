@@ -20,6 +20,7 @@ function error_pause(error: number) { // Pause Program | Press any key to contin
 }
 
 const Battle = async () => {                                // Main function
+  
   const prompt = require("prompt-sync")();                 // get prompt
   let flag: boolean = true;                               // flag for loop
 
@@ -38,7 +39,6 @@ const Battle = async () => {                                // Main function
       }
     } return poke1; // 'poke1`
   }
-
   async function Second_Page(poke1, poke2): Promise<string> { //  [Function] - 2nd Page | Return 'choice' as string
     Title(); // 2nd Page Menu 
     console.log(` > Chosen Pokemon: ${poke1}  \n > Opposing Pokemon: ${poke2} 
@@ -62,9 +62,9 @@ const Battle = async () => {                                // Main function
         return Second_Page(poke1, "PRESS [1] and ENTER a VALID INPUT!!\n"); // Error return 'notice'
       }
     } return poke2;  // Note: Functions are fragmented for errorhandling
-  } // Start of While loop
+  } 
+  // Start of While loop
   while (flag) {
-
         let poke1 = await First_Page();  // get 'poke1'
         let choice = await Second_Page(poke1, "Not yet entered [PRESS 1. FIGHT]\n"); // get choice for second page
 
@@ -92,7 +92,7 @@ const Battle = async () => {                                // Main function
                 } else if (pokestats2.atk > pokestats1.hp) { console.log(`${poke2} WINS!!\n\n`);
                 } else {console.log(`DRAW!!\n\n`);}                                                       // End of Fight Conditions
             } else { error_pause(1); } // Pause then Back to First Page
-                error_pause(0);   // End of Choice 1
+                error_pause(0);       // End of Choice 1
             } else if (choice == "2") {  continue;  //Back to First Page 
             } else if (choice == "3") {  console.log(`BYE BYE!!`); process.exit(0); } // Exit
     }// End of While loop
