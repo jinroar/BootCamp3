@@ -13,7 +13,6 @@
   },
   "scripts": {
     "compile": "npx tsc poke.ts && node poke.js",
-    "compile2": "npx tsc battle.ts && node battle.js",
     "prompt-sync": "ts-node scripts/prompt-sync.ts"
   }
 }
