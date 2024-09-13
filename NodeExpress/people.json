@@ -1,0 +1,17 @@
+
+[{
+    "fname":"jon",
+    "lname":"doe",
+    "age": 33,
+    "subjects": ["eng","math"]
+    
+},
+{
+    "fname":"jane",
+    "lname":"doe",
+    "age": 25,
+    "subjects": ["eng","math"]
+}
+]
+
+
