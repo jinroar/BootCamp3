@@ -347,7 +347,40 @@ function Emoji(){
 export class IceCreamComponent{
   //@Emoji()
   flavor = 'vanilla';
+
+  toppings = [];
+
+  //Make sure/confirm decorator
+  // @Confirmable('Are you sure?')
+  // @Confirmable('Are you super, super sure? Ther is no going back!')
+  addTopping(topping = 'sprinkles'){
+
+    this.toppings.push(topping);
+  }
 }
+
+function Confirmable(message: string){
+
+    return function (target:Object, key: string| symbol, descriptor: PropertyDescriptor){
+      
+      const original = descriptor.value;
+
+      descriptor.value = function(... args: any[]) {
+        const allow = confirm(message);
+
+        if(allow){
+          const result = original.apply(this, args);
+          return result;
+        }else{
+          return null;
+        }
+      };
+         return descriptor;
+    };
+}
+
+
+
 
 function Frozen(constructor: Function){
 Object.freeze(constructor);
