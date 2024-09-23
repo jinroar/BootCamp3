@@ -1,9 +1,17 @@
 // "watch": true,
 {
     "compilerOptions": {
+        "target": "es2015",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
         "module": "commonjs",
-        "target": "es6",
-        "lib": ["dom", "es2017"]
-    }
-
+        "esModuleInterop": true,
+        "lib": [
+            "es2018",
+            "DOM"
+          ],
+    },
+    "strictNullChecks": false
+    // "include": ["src/**/*.ts"],
+    // "exclude": ["node_modules"]
 }

@@ -43,3 +43,4 @@ buttons.forEach((button) => { // for each click of button call listener
     operation(buttonValue); // for each click of button call operation()
   });
 });
+
