@@ -67,7 +67,6 @@ async function askStuff() {
       console.log("\n" + colors + "is not an option");
     }
   }
- 
 }
 
 function pause(err?) { // Pause Program | Press any key to contine 

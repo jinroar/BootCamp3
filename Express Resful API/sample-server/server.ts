@@ -1,7 +1,9 @@
+// integrate require module
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+
 const express = require('express');
 const app = express();
-//Express via common js || Get require to work for es module
-//import { createRequire } from "module";
 //const require = createRequire(import.meta.url);
 const { readFile } = require(`fs`).promises;
 

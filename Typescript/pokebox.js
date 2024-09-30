@@ -36,12 +36,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var fs = require("fs");
+var input_1 = require("input");
 var express = require('express');
 var app = express();
 var readFile = require("fs").promises.readFile;
 var prompt = require("prompt-sync")();
-var fs = require("fs");
-var input_1 = require("input");
 //Read Json and parse
 var jsonData = fs.readFileSync('Box.json', 'utf8');
 var boxdata = JSON.parse(jsonData);
@@ -87,15 +87,13 @@ function getApi() {
         var newItem = req.body;
         data.push(newItem);
         res.status(201).json(newItem);
-    });
-    // POST http://localhost:3000/PokeBox
-    // Body: { "name": "New Item" }
+    }); // Body: { "id": "New Item" }
     //Read (GET) all PokeBox
     app.get('/PokeBox', function (req, res) {
         res.json(data);
     });
 }
-askStuff(); // Arrow keys. 
+askStuff();
 function askStuff() {
     return __awaiter(this, void 0, void 0, function () {
         var choices, colors;
@@ -108,7 +106,7 @@ function askStuff() {
                 case 1:
                     if (!true) return [3 /*break*/, 10];
                     console.clear();
-                    console.log("[PokeBox Select an Option (Use ⬆ and ⬇ arrow keys then press `SPACEBAR` to mark then ENTER)]");
+                    console.log("[PokeBox Select an Option (Use 🔽 and 🔼 arrow keys then press `SPACEBAR` to mark then ENTER)]");
                     choices = ['[1]Store', '[2]View', '[3]Find', '[4]>Exit<'];
                     return [4 /*yield*/, input_1.default.checkboxes(choices)];
                 case 2:
@@ -132,7 +130,9 @@ function askStuff() {
                     return [3 /*break*/, 9];
                 case 8:
                     if (colors == choices[3]) {
-                        process.exit(0);
+                        // boxdata = {}; // Clear the Box, Delete this to keep data
+                        // fs.writeFileSync('./Box.json', JSON.stringify(boxdata, null, 2)); // Clear the Box, Delete this to keep data
+                        // process.exit(0);
                     }
                     else {
                         console.log("\n" + colors + "is not an option");
@@ -144,7 +144,10 @@ function askStuff() {
         });
     });
 }
-function pause() {
+function pause(err) {
+    if (err == 1) {
+        console.log("\nNo Pokemon Found 😢...\nreturning to menu");
+    }
     require("child_process").spawnSync("pause", {
         shell: true,
         stdio: [0, 1, 2],
@@ -193,7 +196,8 @@ function store() {
                     return [3 /*break*/, 7];
                 case 6:
                     error_1 = _a.sent();
-                    return [2 /*return*/, console.log("An error was caught")];
+                    pause(1);
+                    return [3 /*break*/, 7];
                 case 7:
                     pause();
                     return [2 /*return*/];
@@ -218,26 +222,6 @@ function find() {
                     return [2 /*return*/, "ENTER a VALID POKEMON, No numbers!!\n"];
                 case 1:
                     _a.trys.push([1, 4, , 5]);
-                    console.log("Your Pokemon(JSON) is available on this link: http://localhost:8080/PokeBox/".concat(poke));
-                    console.log("Your Pokemon(HTML) is available on this link: http://localhost:8080/meow.html/".concat(poke));
-                    return [4 /*yield*/, fetch("https://pokeapi.co/api/v2/pokemon/".concat(poke))];
-                case 2:
-                    response = _a.sent();
-                    return [4 /*yield*/, response.json()];
-                case 3:
-                    img_1 = _a.sent();
-                    console.log('\n\n\n\n got meow html   ' + img_1.id);
-                    image_1 = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/".concat(img_1.id, ".png");
-                    // http://localhost:8080/meow.html/raichu
-                    // Read (GET) a specific item by ID
-                    app.get("/meow.html/".concat(poke), function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-                        var item;
-                        return __generator(this, function (_a) {
-                            item = data.find(function (item) { return item.name === poke; });
-                            res.send("\n              <img src=\"".concat(image_1, "\"\n                width=\"525\"\n                height=\"300\"/>\n              <h1>View Pok\u00E9mon</h1>\n              <p>Name: ").concat(img_1.name, "</p>\n              <p>Moves: ").concat(item.moves.join(', '), "</p>\n              <p>Sound: ").concat(item.name, ".wav</p>\n              <p><audio controls>\n                <source src=\"").concat(item.sound, "\" type=\"audio/wav\">\n                Your browser does not support the audio element.\n              </audio></p>\n            "));
-                            return [2 /*return*/];
-                        });
-                    }); });
                     // http://localhost:8080/PokeBox/raichu
                     // Read (GET) a specific item by ID
                     app.get('/PokeBox/:name', function (req, res) {
@@ -247,13 +231,34 @@ function find() {
                         }
                         else {
                             res.json(item);
+                            console.log(poke + " Found!!");
                         }
                     });
+                    return [4 /*yield*/, fetch("https://pokeapi.co/api/v2/pokemon/".concat(poke))];
+                case 2:
+                    response = _a.sent();
+                    return [4 /*yield*/, response.json()];
+                case 3:
+                    img_1 = _a.sent();
+                    image_1 = "https://raw.githubusercontent.com/PokeAPI/sprites/refs/heads/master/sprites/pokemon/other/showdown/".concat(img_1.id, ".gif");
+                    // http://localhost:8080/meow.html/raichu
+                    // Read (GET) a specific item by ID
+                    app.get("/meow.html/".concat(poke), function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+                        var item;
+                        return __generator(this, function (_a) {
+                            item = data.find(function (item) { return item.name === poke; });
+                            res.send("\n        <!DOCTYPE html>\n        <html lang=\"en\">\n        <head>\n        <meta charset=\"UTF-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>".concat((img_1.name).toString().toUpperCase(), "</title>\n        <style>\n          body {  background-image: url('https://c4.wallpaperflare.com/wallpaper/996/1000/959/pokemon-wallpaper-preview.jpg');}\n                    img.animated-gif{width: 300pxx; height: 400px;}\n                p  { background-color: rgba(218, 247, 166, 0.6); text-align: center; }\n                h1 { background-color: rgba(255, 255, 255, 0.7); text-align: center; }\n                h2 { background-color: rgba(255, 255, 255, 0.5); padding: 10px;}\n       </style>\n        </head>\n        <body> \n              <div margin: 700px; border: 1px solid #4CAF50; style=\"text-align: center; background-color: rgba(20, 67, 66, 0.5); padding: 10px;\">\n              <div width: 75%;  border: 10px solid #4CAF50; style=\"text-align: center; background-color: rgba(255, 255, 255, 0.2); padding: 10px;\">\n               <img class=\"animated-gif\" src=\"").concat(image_1, "\"/></div>\n               <div style=\"background-color: rgba(255, 194, 165, 0.5); padding: 10px;\" style=\"text-align: center; style=\"display: grid; grid-template-columns: 1fr 1fr;\">\n              <h1>").concat((img_1.name).toString().toUpperCase(), "</h1>\n              <audio controls autoplay>\n                <source src=\"").concat(item.sound, "\" type=\"audio/ogg\">\n                Your browser does not support the audio element.\n              </audio>\n              <h2>Moves:</h2> \n              <p>").concat(item.moves.join('\n ').toUpperCase(), "</p>\n                 </div>\n              </div>\n      </body>\n      </html>\n            "));
+                            return [2 /*return*/];
+                        });
+                    }); });
+                    console.log("\nYour Pokemon(JSON) is available on this link: http://localhost:8080/PokeBox/".concat(poke));
+                    console.log("Your Pokemon(HTML) is available on this link: http://localhost:8080/meow.html/".concat(poke));
+                    console.log('\nCtrl+click desired link(s) \nThen 👇👇👇👇👇👇');
                     return [3 /*break*/, 5];
                 case 4:
                     error_2 = _a.sent();
-                    pause();
-                    return [2 /*return*/, console.log("No Pokemon Found 😢")];
+                    pause(1);
+                    return [3 /*break*/, 5];
                 case 5:
                     pause();
                     return [2 /*return*/];
