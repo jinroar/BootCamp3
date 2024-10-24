@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    // ... other options ...
+    "typeRoots": ["node_modules/@types"],
+    "types": ["node", "mongoose"],
+  },
+"lib": [
+  "ES2018"
+],
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
+}
