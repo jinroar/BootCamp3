@@ -3,9 +3,11 @@ import input from 'input';
 
 let jsonData = fs.readFileSync('Box.json', 'utf8');
 let boxdata = JSON.parse(jsonData);
+
 let getStatus = ["https://bit.ly/draw_gif","https://bit.ly/win_gif,","https://bit.ly/lose_gif"];
 const express = require('express');
 const app = express();
+
 const { readFile } = require(`fs`).promises;
 const prompt = require("prompt-sync")();
 const data = boxdata;

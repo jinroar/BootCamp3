@@ -92,3 +92,20 @@
 //       }
 // });
 // //DELETE http://localhost:3000/Globaltek_Office/1
+
+
+
+
+const str = "";
+let num =  4 ;
+
+const function1  = () => {
+
+
+    
+}
+
+function func2 () {
+
+
+}

@@ -1,0 +1,308 @@
+@import url('https://fonts.cdnfonts.com/css/pokemon-solid');
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {zoom: 90%;}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {  background-image: url('https://wallpaperaccess.com/full/8406757.gif');
+      height: 1000vh;
+      background-size: contain;
+      background-repeat: no-repeat;
+      overflow: hidden;
+}
+
+p  { font-weight: bold; font-size: 24px; background-color: rgba(255, 255, 255, 0.315); text-align: left;  border-radius: 25px; 
+padding-left: 10px; padding-right: 10px; padding-top: 10px;  border: 3px solid #0000008c; padding-bottom: 10px;}
+/* h1 { background-color: rgba(255, 255, 255, 0.7); text-align: center;  border-radius: 25px;  } */
+h2 { background-color: rgba(255, 255, 255, 0.5); padding: 10px;  border-radius: 25px;}
+.image-container { display: flex; justify-content: space-between; /* or space-around, or center */}
+
+.gif{
+   height: 150px;
+   width:  120px;
+}
+
+.fight  {
+  text-align: center;
+  font-size:calc(1.5vw);
+  font-family: 'Pokemon Solid', sans-serif; color: #fffffff3;
+  text-shadow: 1px 10px 0 #00000046, -1px 1px 0 #ff0000a8, 8px -1px 0 #ff0000a8, -1px -1px 0 #79343400;
+}
+
+.imgbox1{
+  position: left;
+  margin: 1px; border: 1px solid #171a17; 
+  text-align: center; 
+  background-color: rgba(253, 248, 248, 0.418); 
+  padding: 30px;
+}
+
+.imgbox2{
+  position: left;
+  margin: 1px; border: 1px solid #171a17; 
+  text-align: center; 
+  background-color:  rgba(253, 248, 248, 0.418); 
+  padding: 30px;
+}
+
+.box1{
+  border: 1px solid #5f84ff; 
+  background-color: rgba(91, 212, 210, 0.2); 
+  padding: 10px;
+  text-align: center;  position: left;
+}
+
+.box2{
+  border: 1px solid #5f84ff; 
+  background-color: rgba(91, 212, 210, 0.2);
+  padding: 10px;
+  text-align: center;  position: left;
+  }
+
+.bbox1{
+  position: absolute;
+  margin: 300px; border: 8px solid #e6e9e659; 
+  text-align: center; 
+  background-color: rgba(255, 255, 0, 0.288); 
+  border-radius: 12px;
+}
+
+.bbox2{
+  position: absolute;
+  margin-top: 300px; 
+  border: 8px solid #eeeeee60; 
+  text-align: center; 
+  background-color: rgba(65, 84, 255, 0.301); 
+  border-radius: 12px;
+  margin-left: 1680px;
+}
+
+.ibox1{
+  margin: 1px; border: 1px solid #171a17; 
+  background-color: rgba(192, 150, 73, 0.904); 
+  padding: 30px;
+  text-align: center;  position: left;
+  border: 10px solid #fbff0060; 
+}
+
+.ibox2{
+  position: left;
+  margin: 1px; border: 1px solid #171a17; 
+  text-align: center; 
+  background-color: rgba(32, 49, 94, 0.644); 
+  padding: 30px;
+  border: 10px solid #fbff0060; 
+}
+
+.sbox1{
+  position: absolute;
+  margin: 30px; border: 3px solid #e6e9e659; 
+  text-align: center; 
+  background-color: rgba(211, 95, 41, 0.884); 
+  padding: 10px;
+  border-radius: 12px;
+  margin-left: 90px;
+  border: none;
+}
+
+.sbox2{
+  position: absolute;
+  margin: 30px; border: 3px solid #eeeeee60; 
+  text-align: center; 
+  background-color: rgba(65, 84, 255, 0.644); 
+  padding: 10px;
+  border-radius: 12px;
+  margin-left: 1430px;
+  border: none;
+}
+
+.btn-grad {
+  background-image: linear-gradient(to right, #fa7148e5 0%, #8c6edf  31%, #ff0526ea  100%);
+  margin: 10px;
+  padding: 1px;
+  padding-bottom: 10px;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: rgb(217, 255, 47);            
+  box-shadow: 0 0 20px #eee;
+  border-radius: 10px;
+  border-spacing: 20px;
+  display: block;
+  float: right;
+  position: relative;
+  margin-left: 1000px; 
+  font-weight: bold;
+  margin-top: 10px;  
+  font-family: 'Pokemon Solid', sans-serif; color: #fffffff3;
+  letter-spacing: 8px;
+  text-shadow: 1px 10px 0 #000000, -1px 1px 0 #e4e71eab, 8px -1px 0 #f34545ea, -1px -1px 0 #79343400;
+  width: 200px; /* adjust to your desired size */
+  height: 200px; /* adjust to your desired size */
+  border-radius: 50%; /* makes the button a circle */
+  background-color: #4CAF50; /* adjust to your desired color */
+  margin-top: 60px;
+  margin-left: 1080px; border: 1px solid #171a17; 
+
+}
+
+.btn-grad:hover {
+  background-position: right center; /* change the direction of the change here */
+  color: #f04545;
+  text-decoration: none;
+}
+
+.tbox{
+  position: relative;
+  margin: 7px; border: 1px solid #4CAF50; 
+  text-align: center; 
+  width: 500px;
+  background-color: rgba(0, 0, 0, 0.226); 
+  font-size: 24px;
+  letter-spacing: 10px;
+  font-family: 'Pokemon Solid', sans-serif; color: #fffffff3;
+  text-shadow: 1px 10px 0 #00000046, -1px 1px 0 #ff0000a8, 8px -1px 0 #ff0000a8, -1px -1px 0 #79343400;
+  border-radius: 25px;
+}
+
+.tbox:hover {
+  border-color: #d9ff00;
+}
+.tbox:focus,
+.tbox:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+input::placeholder {  color: rgb(255, 255, 255); }
+
+.tbox2{
+  position: relative;
+  margin-left: 10px; 
+  margin-top: 10px;  
+  width: 300px;
+  text-align: center; 
+  background-color: rgba(32, 29, 29, 0.829); 
+  font-size: 24px;
+  border-radius: 25px;
+  font-weight: bold;
+  letter-spacing: 10px;
+  font-family: 'Pokemon Solid', sans-serif; color: #fffffff3;
+  text-shadow: 1px 10px 0 #00000046, -1px 1px 0 #ff0000a8, 8px -1px 0 #ff0000a8, -1px -1px 0 #79343400;
+  background-color: #2e2e2e8e;
+  letter-spacing: 10px;
+}
+
+.tbox2:hover {
+  background-position: right center; /* change the direction of the change here */
+  color: #fffd83;
+  text-decoration: none;
+}
+.tbox2:focus,
+.tbox2:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+ 
+.box5{
+  display: flex;
+  position: absolute;
+  align-items: center;
+  top: 450px; /* 50px from the top of its nearest positioned ancestor */
+  left: 880px; /* 30px from the left of its nearest positioned ancestor */
+  margin: 60px; border: 1px solid #b8da21; 
+  text-align: center; 
+  align-items: center;
+  background-color: rgba(134, 118, 96, 0.486); 
+  padding: 10px;
+  font-size: 18px;
+  letter-spacing: 10px;
+  margin-left: 60px;
+}
+
+.hide {
+  display: none;
+  position: absolute;
+  bottom: 175px;
+  margin: 100px;
+  border: 1px solid #b8da21; 
+  text-align: center; 
+  background-color: rgba(48, 45, 42, 0.849); 
+  padding: 10px;
+  font-size: 24px;
+  font-weight: bold;
+}
+    
+.fight:hover + .hide {
+  display: block;
+  color: rgb(255, 255, 255);
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+img{
+  height: 80%;
+  width: 50%;
+}
+
+divBox{
+  margin: 700px; 
+  border: 1px solid #4CAF50; 
+  text-align: center;
+   background-color: rgba(20, 67, 66, 0.5);
+    padding: 10px;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}

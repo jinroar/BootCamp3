@@ -6,6 +6,10 @@
  * 
  * */
 //promises
+
+
+
+
 const myFunction = async () => {
     const myPromise = new Promise((resolve, reject) => {
         const time = 59;
