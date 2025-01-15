@@ -387,6 +387,7 @@ Object.freeze(constructor);
 Object.freeze(constructor.prototype);
 }
 
+
 console.log(Object.isFrozen(IceCreamComponent))
 // If `new` will be false   ^
 // READ ONLY

@@ -1,286 +1,244 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { PullResult } from '../types';
+import { getAllCharacters, getAllWeapons, getRandomWeapon, getRandomCharacter } from '../utils';
 
-// Type definitions for the pulled result
-type PullResult = {
-    rarity: string;
-    type: string;
-    id: string;
-    image: string;
-    description: string;
-};
-
-// Define expected structure for character data
-type CharacterData = {
-    rarity: string;
-    description?: string;
-};
-
-// Define expected structure for weapon data
-type WeaponData = {
-    rarity: string;
-    passiveDesc?: string;
-};
 
 export const StandardBanner: React.FC = () => {
     const [pullResult, setPullResult] = useState<PullResult | null>(null);
-    const [error, setError] = useState<string | null>(null); // Track errors
-    const [wishCount, setWishCount] = useState<number>(0); // Track the number of pulls
-    const [pulled4Star, setPulled4Star] = useState<boolean>(false); // Track if we've pulled a 4-star yet
-    const [pulled5Star, setPulled5Star] = useState<boolean>(false); // Track if we've pulled a 5-star yet
-    const [pullHistory, setPullHistory] = useState<PullResult[]>([]); // Store history of pulls
-    const [showHistory, setShowHistory] = useState<boolean>(false); // Toggle history visibility
+    const [previousPull, setPreviousPull] = useState<PullResult | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [wishCount, setWishCount] = useState<number>(0);
+    const [pullHistory, setPullHistory] = useState<PullResult[]>([]);
+    const [showHistory, setShowHistory] = useState<boolean>(false);
+    const [primogems, setPrimogems] = useState<number>(32000); // Starting primogems
+    const [isPulling, setIsPulling] = useState<boolean>(false); // To prevent multiple pulls
+    const pullCost = 160;
 
-    const [primogems, setPrimogems] = useState<number>(32000); // User's primogem balance
-    const pullCost = 160; // Cost of each pull in primogems
+    // Pity counters
+    const [fourStarPity, setFourStarPity] = useState<number>(0); // 4-star pity counter
+    const [fiveStarPity, setFiveStarPity] = useState<number>(0); // 5-star pity counter
 
-    // Fetch character data based on name
-    const getCharacterDetails = async (name: string): Promise<PullResult | null> => {
-        try {
-            const response = await fetch(`https://genshin.jmp.blue/characters/${name}`);
-            if (!response.ok) {
-                throw new Error("Failed to fetch character details");
+    // Combined counters for 1-star, 2-star, 3-star, 4-star, and 5-star
+    const [rarityCounters, setRarityCounters] = useState({
+        threeStar: 0, // 1-star, 2-star, and 3-star weapons count as 3-star
+        fourStar: 0,
+        fiveStar: 0
+    });
+
+    // State to store all characters and weapons
+    const [allCharacters, setAllCharacters] = useState<PullResult[]>([]);
+    const [allWeapons, setAllWeapons] = useState<PullResult[]>([]);
+
+    // Fetch all characters and weapons on component mount
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const characters = await getAllCharacters();
+                const weapons = await getAllWeapons();
+
+                if (characters) {
+                    setAllCharacters(characters);
+                }
+
+                if (weapons) {
+                    setAllWeapons(weapons);
+                }
+            } catch (err) {
+                console.error("Error fetching initial data:", err);
             }
-            const characterData: CharacterData = await response.json();
+        };
 
-            // Construct character image URL (fall back to default image if not available)
-            const characterImage = `https://genshin.jmp.blue/characters/${name}/card`;
+        fetchData();
+    }, []);
 
-            return {
-                rarity: characterData.rarity,
-                type: "character",
-                id: name,
-                image: characterImage,  // Use the character image URL
-                description: characterData.description || "No description available.",
-            };
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                setError(`Error: ${err.message}`);
-            } else {
-                setError("An unknown error occurred.");
-            }
-            return null;
-        }
-    };
-
-    // Fetch weapon data based on name
-    const getWeaponDetails = async (name: string): Promise<PullResult | null> => {
-        try {
-            const response = await fetch(`https://genshin.jmp.blue/weapons/${name}`);
-            if (!response.ok) {
-                throw new Error("Failed to fetch weapon details");
-            }
-            const weaponData: WeaponData = await response.json();
-            // Weapons have image property in API response
-            const weaponImage = `https://genshin.jmp.blue/weapons/${name}/icon`;
-
-            return {
-                rarity: weaponData.rarity,
-                type: "weapon",
-                id: name,
-                image: weaponImage, // Use the weapon image from the response
-                description: weaponData.passiveDesc || "No description available.",
-            };
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                setError(`Error: ${err.message}`);
-            } else {
-                setError("An unknown error occurred.");
-            }
-            return null;
-        }
-    };
-
-    // Fetch all characters and select a random character
-    const getRandomCharacter = async (): Promise<PullResult | null> => {
-        try {
-            const response = await fetch("https://genshin.jmp.blue/characters");
-            if (!response.ok) {
-                throw new Error("Failed to fetch characters");
-            }
-            const characters: string[] = await response.json();
-            const randomCharacterName = characters[Math.floor(Math.random() * characters.length)];
-
-            return await getCharacterDetails(randomCharacterName);
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                setError(`Error: ${err.message}`);
-            } else {
-                setError("An unknown error occurred.");
-            }
-            return null;
-        }
-    };
-
-    // Fetch all weapons and select a random weapon
-    const getRandomWeapon = async (): Promise<PullResult | null> => {
-        try {
-            const response = await fetch("https://genshin.jmp.blue/weapons");
-            if (!response.ok) {
-                throw new Error("Failed to fetch weapons");
-            }
-            const weapons: string[] = await response.json();
-            const randomWeaponName = weapons[Math.floor(Math.random() * weapons.length)];
-
-            return await getWeaponDetails(randomWeaponName);
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                setError(`Error: ${err.message}`);
-            } else {
-                setError("An unknown error occurred.");
-            }
-            return null;
-        }
-    };
-
-    // Simulate a "Wish" pull
+    // Simulate a pull (Wish) with pity system
     const pullWish = async (): Promise<void> => {
-        if (primogems < pullCost) {
-            setError("Not enough Primogems to pull.");
+        if (primogems < pullCost || isPulling) {
+            setError("Not enough Primogems or already pulling!");
             return;
         }
 
-        setError(null); // Clear any previous errors
-
-        // Deduct the primogems cost
+        setIsPulling(true); // Prevent multiple pulls
+        setError(null); // Reset any previous errors
         setPrimogems((prev) => prev - pullCost);
-
-        // Increment the wish count
         setWishCount((prevCount) => prevCount + 1);
 
         let itemData: PullResult | null = null;
 
-        // Handle guaranteed 4-star and 5-star pulls based on the pity system
-        if (wishCount >= 80 && !pulled5Star) {
-            // Guaranteed 5-star after 80 pulls
-            const isCharacter = Math.random() < 0.5; // 50% chance for character or weapon
-            itemData = isCharacter ? await getRandomCharacter() : await getRandomWeapon();
-            setPulled5Star(true); // Mark that we've pulled a 5-star
-            setWishCount(0); // Reset the pity counter for 5-star
-        } else if (wishCount >= 10 && !pulled4Star) {
-            // Guaranteed 4-star after 10 pulls
-            const isCharacter = Math.random() < 0.5; // 50% chance for character or weapon
-            itemData = isCharacter ? await getRandomCharacter() : await getRandomWeapon();
-            setPulled4Star(true); // Mark that we've pulled a 4-star
-            setWishCount(0); // Reset the pity counter for 4-star
-        } else {
-            // Normal random pull logic based on given chances:
-            const pullOutcome = Math.random();
-            if (pullOutcome < 0.006) {
-                // 0.6% chance for a 5-star
-                const isCharacter = Math.random() < 0.5; // 50% chance for character or weapon
-                itemData = isCharacter ? await getRandomCharacter() : await getRandomWeapon();
-                setPulled5Star(true); // Mark that we've pulled a 5-star
-            } else if (pullOutcome < 0.056) {
-                // 5.1% chance for a 4-star
-                const isCharacter = Math.random() < 0.5; // 50% chance for character or weapon
-                itemData = isCharacter ? await getRandomCharacter() : await getRandomWeapon();
-                setPulled4Star(true); // Mark that we've pulled a 4-star
-            } else {
-                // 94.3% chance for a 3-star weapon
-                itemData = await getRandomWeapon();
+        // Increment pity counters
+        setFourStarPity((prev) => prev + 1);
+        setFiveStarPity((prev) => prev + 1);
+
+        // Handle pity system for 4-star (10 pulls without 4-star)
+        if (fourStarPity == 9 || (fiveStarPity == 0 && fourStarPity == 9)) {
+            // Fetch 4-star or higher item (character or weapon)
+            itemData = await getRandomCharacter(4) || await getRandomWeapon(4);
+            setFourStarPity(0); // Reset 4-star pity after guaranteed 4-star pull
+        }
+        // Handle pity system for 5-star (80 pulls without 5-star)
+        else if (fiveStarPity == 79 || (fiveStarPity == 79 && fourStarPity == 9)) {
+            // Fetch 5-star item (character or weapon)
+            itemData = await getRandomCharacter(5) || await getRandomWeapon(5);
+            setFiveStarPity(0); // Reset 5-star pity after guaranteed 5-star pull
+        }
+        // Regular pulls based on probability
+        else {
+            // Handle regular pulls with probabilities
+            const pullOutcome = Math.random() * 100; // Generate a random number between 0 and 100
+
+            if (pullOutcome < 93.3) {
+                console.log("3-star: " + pullOutcome);
+                // 93.3% chance for 3-star or lower items (1-star, 2-star, 3-star)
+                itemData = await getRandomWeapon(3); // Fetch 3-star or lower weapon
+            }
+            else if (pullOutcome < 99.3) {
+                console.log("4-star: " + pullOutcome);
+                // 6% chance for 4-star (could be character or weapon)
+                itemData = await getRandomCharacter(4) || await getRandomWeapon(4); // Fetch 4-star character or weapon
+            }
+            else {
+                console.log("5-star: " + pullOutcome);
+                // 0.7% chance for 5-star (could be character or weapon)
+                itemData = await getRandomCharacter(5) || await getRandomWeapon(5); // Fetch 5-star character or weapon
             }
         }
 
-        // Display the pulled item with the correct rarity fetched from API
-        setPullResult(itemData);
-
-        // Add the new pull to the history
         if (itemData) {
-            setPullHistory((prevHistory) => [...prevHistory, itemData]);
+            setPreviousPull(pullResult); // Set the current pull as the previous one
+            setPullResult(itemData);
+            setPullHistory((prevHistory) => {
+                const newHistory = [...prevHistory, itemData];
+                return newHistory.slice(-10); // Keep only the last 10 pulls
+            });
+
+            // Update the combined rarity counters
+            const rarity = parseInt(itemData.rarity);
+            setRarityCounters((prevCounters) => {
+                if (rarity === 1 || rarity === 2 || rarity === 3) {
+                    return { ...prevCounters, threeStar: prevCounters.threeStar + 1 }; // Increment 3-star counter for 1, 2, and 3-star weapons
+                } else if (rarity === 4) {
+                    return { ...prevCounters, fourStar: prevCounters.fourStar + 1 };
+                } else if (rarity === 5) {
+                    return { ...prevCounters, fiveStar: prevCounters.fiveStar + 1 };
+                }
+                return prevCounters;
+            });
+
+            // Reset pity counters on 4-star and 5-star pulls
+            if (rarity === 4) {
+                setFourStarPity(0);
+            } else if (rarity === 5) {
+                setFiveStarPity(0);
+            }
         }
+
+        setIsPulling(false); // Enable the button after the pull is done
     };
 
-    // Toggle the visibility of pull history
+
+
+    // Toggle history display
     const toggleHistory = () => {
         setShowHistory((prevState) => !prevState);
     };
 
     return (
-        <div className="min-h-screen flex justify-center items-center"
-            style={{
-                backgroundImage: 'url("https://pa1.narvii.com/7742/e2079410e35198a15a6547222b38feefa188c800r1-960-539_hq.gif")',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-            }}
-        >
-            <div className="text-center p-8 bg-gray-800 bg-opacity-70 rounded-lg shadow-lg">
-                <h1 className="text-4xl font-bold mb-8 text-white">Genshin Impact Wish Simulator</h1>
-                <h2 className="text-4xl font-bold mb-8 text-white">Weapon</h2>
-                {/* Show current primogem balance */}
-                <div className="text-xl mb-4 text-white">Primogems: {primogems}</div>
+        <div className="relative w-full h-screen overflow-hidden">
+            {/* Full-screen background */}
+            <div
+                className="absolute inset-0 bg-cover bg-center bg-fixed"
+                style={{
+                    backgroundImage: 'url("https://pa1.narvii.com/7742/e2079410e35198a15a6547222b38feefa188c800r1-960-539_hq.gif")',
+                }}
+            ></div>
 
-                <button
-                    onClick={pullWish}
-                    className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:scale-105 hover:from-blue-600 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all duration-300 ease-in-out transform"
-                    disabled={primogems < pullCost} // Disable the button if not enough primogems
-                >
-                    Pull (Cost: {pullCost} Primogems)
-                </button>
+            {/* Main content wrapper */}
+            <div className="relative flex flex-col justify-start items-center w-full h-full bg-black bg-opacity-60 overflow-hidden">
+                {/* Pull Tracker */}
+                <div className="absolute top-10 right-10 bg-gray-800 text-white p-4 rounded-lg shadow-lg max-w-xs w-full">
+                    <div className="text-xl mb-4 text-white">
+                        Primogems: {primogems}
+                    </div>
+                    <h2 className="text-xl font-bold">Pull Tracker</h2>
+                    <div className="text-xl mb-4 text-white">
+                        Number of pulls: {wishCount}
+                    </div>
 
-                {error && (
-                    <div className="mt-4 text-red-500 font-semibold">{error}</div>
-                )}
+                    <p>3-Star (including 1- and 2-star weapons): {rarityCounters.threeStar}</p>
+                    <p>4-Star: {rarityCounters.fourStar}</p>
+                    <p>5-Star: {rarityCounters.fiveStar}</p>
+                    <p>4-Star Pity: {fourStarPity}/10</p>
+                    <p>5-Star Pity: {fiveStarPity}/80</p>
+                </div>
 
-                {/* Display current and previous pull side by side */}
-                {pullResult && (
-                    <div className="mt-6 bg-gray-700 p-6 rounded-lg shadow-md">
-                        <h3 className="text-xl font-semibold text-center text-white">
-                            You've pulled a {pullResult.rarity} {pullResult.type}!
-                        </h3>
-                        <p className="mt-2 text-center text-white">ID: {pullResult.id}</p>
+                <div className="text-center p-8 bg-gray-800 bg-opacity-70 rounded-lg shadow-lg w-full md:w-2/3 lg:w-1/2 mb-auto">
+                    <h1 className="text-4xl font-bold mb-8 text-white">Genshin Impact Wish Simulator</h1>
+                    <h2 className="text-4xl font-bold mb-8 text-white">Standard</h2>
 
-                        <div className="flex justify-center space-x-6 overflow-x-auto">
-                            {/* Current pull */}
-                            <div className="flex-shrink-0 w-60">
-                                <img
-                                    src={pullResult.image}
-                                    alt={pullResult.id}
-                                    className="w-full h-60 object-cover mx-auto mt-4"
-                                />
-                                <p className="mt-2 text-center text-white px-2 max-h-24 overflow-auto">{pullResult.description}</p>
-                            </div>
+                    {/* Pull button moved to the right side */}
+                    <div className="absolute right-10 bottom-24">
+                        <button onClick={pullWish} className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:scale-105 hover:from-blue-600 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all duration-300 ease-in-out transform" disabled={primogems < pullCost || isPulling}>
+                            {isPulling ? (
+                                <div className="animate-spin h-5 w-5 border-4 border-t-transparent border-blue-600 rounded-full"></div>
+                            ) : (
+                                `Pull (Cost: ${pullCost} Primogems)`
+                            )}
+                        </button>
+                    </div>
 
-                            {/* Previous pull (if exists) */}
-                            {pullHistory.length > 1 && (
+                    {error && <div className="mt-4 text-red-500 font-semibold">{error}</div>}
+                    {pullResult && (
+                        <div className="mt-6 bg-gray-700 p-6 rounded-lg shadow-md">
+                            <h3 className="text-xl font-semibold text-center text-white">
+                                You've pulled a {pullResult.rarity}-star {pullResult.type}!
+                            </h3>
+                            <p className="mt-2 text-center text-white">ID: {pullResult.id}</p>
+                            <div className="flex justify-center space-x-6 overflow-x-auto">
                                 <div className="flex-shrink-0 w-60">
+                                    {/* Use a placeholder if no image is available */}
                                     <img
-                                        src={pullHistory[pullHistory.length - 2].image}
-                                        alt={pullHistory[pullHistory.length - 2].id}
+                                        src={pullResult.image || "https://i.kym-cdn.com/entries/icons/mobile/000/049/004/lebronsunshinecover.jpg"}
+                                        alt={pullResult.id}
                                         className="w-full h-60 object-cover mx-auto mt-4"
                                     />
-                                    <p className="mt-2 text-center text-white px-2 max-h-24 overflow-auto">
-                                        {pullHistory[pullHistory.length - 2].description}
-                                    </p>
+                                    <p className="mt-2 text-center text-white px-2 max-h-24 overflow-y-auto">{pullResult.description}</p>
                                 </div>
-                            )}
-                        </div>
-                    </div>
-                )}
 
-                {/* History button below pulled item */}
-                <div className="mt-6">
-                    <button
-                        onClick={toggleHistory}
-                        className="bg-gradient-to-r from-green-500 via-green-600 to-green-700 hover:scale-105 hover:from-green-600 hover:to-green-800 text-white font-bold py-2 px-4 text-sm rounded-lg shadow-md mt-4 transition-all duration-300 ease-in-out transform"
-                    >
+                                {/* Previous pull */}
+                                {previousPull && (
+                                    <div className="flex-shrink-0 w-60">
+                                        {/* Use a placeholder if no image is available */}
+                                        <img
+                                            src={previousPull.image || "https://i.kym-cdn.com/entries/icons/mobile/000/049/004/lebronsunshinecover.jpg"}
+                                            alt={previousPull.id}
+                                            className="w-full h-60 object-cover mx-auto mt-4"
+                                        />
+                                        <p className="mt-2 text-center text-white px-2 max-h-24 overflow-y-auto">{previousPull.description}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                </div>
+
+                {/* Show Pull History button on the left side */}
+                <div className="absolute left-10 bottom-10 z-10">
+                    <button onClick={toggleHistory} className="bg-gradient-to-r from-green-500 via-green-600 to-green-700 hover:scale-105 hover:from-green-600 hover:to-green-800 text-white font-bold py-2 px-4 text-sm rounded-lg shadow-md mt-4 transition-all duration-300 ease-in-out transform">
                         {showHistory ? 'Hide Pull History' : 'Show Pull History'}
                     </button>
                 </div>
 
-                {/* Show pull history if available */}
+                {/* Pull History */}
                 {showHistory && pullHistory.length > 0 && (
-                    <div className="mt-6 bg-gray-700 p-6 rounded-lg shadow-md">
+                    <div className="absolute left-10 top-20 bg-gray-700 p-6 rounded-lg shadow-md w-80 max-h-[calc(100vh-200px)] overflow-y-auto z-10">
                         <h3 className="text-xl font-semibold text-center text-white">Pull History</h3>
                         <div className="mt-4 space-y-4">
                             {pullHistory.map((item, index) => (
                                 <div key={index} className="bg-gray-600 p-4 rounded-lg shadow-md">
-                                    <p className="font-semibold text-white">{item.rarity} {item.type}</p>
+                                    <p className="font-semibold text-white">{item.rarity}-star {item.type}</p>
                                     <p className="text-white">{item.id}</p>
-                                    <img
-                                        src={item.image}
-                                        alt={item.id}
-                                        className="w-24 mx-auto mt-2"
-                                    />
+                                    <img src={`https://genshin.jmp.blue/weapons/${item.id}/icon`} alt={item.id} className="w-24 mx-auto mt-2" />
                                     <p className="mt-2 text-white">{item.description}</p>
                                 </div>
                             ))}

@@ -2,7 +2,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { StandardBanner } from './pages/StandardBanner';
-import { WeaponBanner } from './pages/WeaponBanner';
+import {WeaponBanner} from './pages/WeaponBanner';
 
 const App: React.FC = () => {
   return (
