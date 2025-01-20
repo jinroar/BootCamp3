@@ -7,6 +7,21 @@
 //     description: string;
 // };
 
+
+// types.ts
+export type PullDisplay = {
+    name: string;
+    rarity: string;
+    type: string; // e.g., 'weapon', 'character'
+    imageUrl: string;
+};
+
+export type RarityCounters = {
+    threeStar: number;
+    fourStar: number;
+    fiveStar: number;
+};
+
 export interface PullResult {
     id: string;
     rarity: string;

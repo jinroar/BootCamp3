@@ -1,174 +1,232 @@
-import React, { useState } from 'react';
-import { PullResult } from "../types";
-import { getRandomWeapon } from '../utils'; // Import utility functions
+// WeaponBanner.tsx
+import React, { useState, useEffect } from 'react';
+import { PullResult } from '../types';
+import { getAllWeapons, getRandomWeapon } from '../utils'; // We only need weapons for the Weapon Banner
+import History from '../components/History';
+import PullTracker from '../components/PullTracker';
+import PullResultDisplay from '../components/PullResults';
+import { Link } from 'react-router-dom';
 
 export const WeaponBanner: React.FC = () => {
     const [pullResult, setPullResult] = useState<PullResult | null>(null);
     const [previousPull, setPreviousPull] = useState<PullResult | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [primogems, setPrimogems] = useState<number>(32000); // Starting primogems
-    const [isPulling, setIsPulling] = useState<boolean>(false); // Prevent multiple pulls
-    const [fourStarPity, setFourStarPity] = useState<number>(0); // 4-star pity counter
-    const [fiveStarPity, setFiveStarPity] = useState<number>(0); // 5-star pity counter
-    const [pullHistory, setPullHistory] = useState<PullResult[]>([]); // Store pull history
-    const [isHistoryVisible, setIsHistoryVisible] = useState<boolean>(false); // Toggle for history visibility
+    const [wishCount, setWishCount] = useState<number>(0);
+    const [pullHistory, setPullHistory] = useState<PullResult[]>([]);
+    const [primogems, setPrimogems] = useState<number>(32000); // Default value if not found in localStorage
+    const [isPulling, setIsPulling] = useState<boolean>(false);
+    const [showHistory, setShowHistory] = useState<boolean>(false);
+    // Pity counters for WeaponBanner
+    const [fourStarPity, setFourStarPity] = useState<number>(0); // 4-star pity counter (2 margin difference)
+    const [fiveStarPity, setFiveStarPity] = useState<number>(0); // 5-star pity counter (2 margin difference)
     const pullCost = 160;
 
-    const handlePullWish = async () => {
+    // Fetch primogems from localStorage on component mount
+    useEffect(() => {
+        const storedPrimogems = localStorage.getItem('primogems');
+        console.log('Fetched primogems from localStorage:', storedPrimogems); // Debugging line
+
+        if (storedPrimogems) {
+            setPrimogems(Number(storedPrimogems)); // Parse and set primogems if it exists in localStorage
+        }
+    }, []);
+
+    // Update localStorage whenever primogems state changes
+    useEffect(() => {
+        console.log('Updating primogems in localStorage:', primogems); // Debugging line
+        localStorage.setItem('primogems', primogems.toString());
+    }, [primogems]);
+
+    // State to store all weapons
+    const [allWeapons, setAllWeapons] = useState<PullResult[]>([]);
+
+    // Fetch all weapons on component mount
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const weapons = await getAllWeapons();
+                if (weapons) {
+                    setAllWeapons(weapons);
+                }
+            } catch (err) {
+                console.error('Error fetching weapons:', err);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    // Combined counters for 3-star, 4-star, and 5-star
+    const [rarityCounters, setRarityCounters] = useState({
+        threeStar: 0,
+        fourStar: 0,
+        fiveStar: 0,
+    });
+
+    // Simulate a pull (Wish) with pity system for Weapon Banner
+    const pullWish = async (): Promise<void> => {
         if (primogems < pullCost || isPulling) {
             setError("Not enough Primogems or already pulling!");
             return;
         }
 
         setIsPulling(true);
-        setError(null); // Reset any previous errors
-        setPrimogems((prev) => prev - pullCost);
+        setError(null);
+        setPrimogems(prev => prev - pullCost); // Decrease primogems after a pull
+        setWishCount((prevCount) => prevCount + 1);
 
         let itemData: PullResult | null = null;
 
-        // Increment pity counters
-        setFourStarPity((prev) => prev + 1);
-        setFiveStarPity((prev) => prev + 1);
+        // Increment pity counters for Weapon Banner
+        setFourStarPity((prev) => prev + 1);  
+        setFiveStarPity((prev) => prev + 1); // Increment by 2 for 5-star pity
 
-        // Handle pity system for 4-star (10 pulls without 4-star)
-        if (fourStarPity == 9) {
-            itemData = await getRandomWeapon(4); // Fetch 4-star or higher weapon
-            setFourStarPity(0); // Reset 4-star pity after guaranteed 4-star pull
-        }
         // Handle pity system for 5-star (80 pulls without 5-star)
-        else if (fiveStarPity >= 79) {
-            itemData = await getRandomWeapon(5); // Fetch 5-star weapon
-            setFiveStarPity(0); // Reset 5-star pity after guaranteed 5-star pull
+      
+          // Handle pity system for 4-star (10 pulls without 4-star)
+          if (fourStarPity >= 9) {
+            itemData = await getRandomWeapon(4); // Get a 4-star weapon
+            setFourStarPity(0); // Reset 4-star pity after guaranteed 4-star pull
+            if (fiveStarPity == 79) {
+                itemData = await getRandomWeapon(5); // Get a 5-star weapon
+                setFiveStarPity(0); // Reset 5-star pity after guaranteed 5-star pull
+            }
         }
         // Regular pulls based on probability
         else {
-            const pullOutcome = Math.random();
-            if (pullOutcome < 0.93) {
-                // 93% chance for 3-star weapon (includes 1 and 2-star)
-                itemData = await getRandomWeapon(3); // Fetch 3-star or lower weapons
-            }
-            else if (pullOutcome < 0.98) {
-                // 5% chance for 4-star weapon
-                itemData = await getRandomWeapon(4);  // Fetch 4-star or lower weapon
-            }
-            else {
-                // 2% chance for 5-star weapon
-                itemData = await getRandomWeapon(5);  // Fetch 5-star weapon
+            const pullOutcome = Math.random() * 100; // Generate a random number between 0 and 100
+            if (pullOutcome <= 0.07) {
+                itemData = await getRandomWeapon(5); // Fetch a 5-star weapon
+            } else if (pullOutcome > 0.07 && pullOutcome <= 5.17) {
+                itemData = await getRandomWeapon(4); // Fetch a 4-star weapon
+            } else {
+                itemData = await getRandomWeapon(3); // Fetch a 3-star weapon
             }
         }
 
         if (itemData) {
             setPreviousPull(pullResult); // Set the current pull as the previous one
             setPullResult(itemData);
+            setPullHistory((prevHistory) => {
+                const newHistory = [itemData, ...prevHistory];
+                return newHistory.slice(-250); // Keep only the last 250 pulls
+            });
 
-            // Increment the appropriate counter based on the rarity
+            // Update the combined rarity counters
             const rarity = parseInt(itemData.rarity);
-            if (rarity <= 3) {
-                // Handle 3-star pulls
-            } else if (rarity === 4) {
-                // Handle 4-star pulls
-            } else if (rarity === 5) {
-                // Handle 5-star pulls
-            }
-
-            // Add the current pull to history
-            setPullHistory((prevHistory) => [itemData, ...prevHistory]);
+            setRarityCounters((prevCounters) => {
+                if (rarity === 3) {
+                    return { ...prevCounters, threeStar: prevCounters.threeStar + 1 }; // Increment 3-star counter for 1, 2, and 3-star weapons
+                } else if (rarity === 4) {
+                    return { ...prevCounters, fourStar: prevCounters.fourStar + 1 };
+                } else if (rarity === 5) {
+                    return { ...prevCounters, fiveStar: prevCounters.fiveStar + 1 };
+                }
+                return prevCounters;
+            });
         }
 
         setIsPulling(false); // Enable the button after the pull is done
     };
 
+    // Function to determine the background color based on rarity
+    const getBorderColor = (rarity: number) => {
+        switch (rarity) {
+            case 5:
+                return 'bg-yellow-500 border-4 border-yellow-700 shadow-[0_0_10px_4px_rgba(255,223,0,0.7)]'; // 5-star (gold/yellow)
+            case 4:
+                return 'bg-purple-500 border-4 border-purple-700 shadow-[0_0_10px_4px_rgba(128,0,128,0.7)]'; // 4-star (purple)
+            case 3:
+                return 'bg-blue-500 border-4 border-blue-700 shadow-[0_0_10px_4px_rgba(0,0,255,0.7)]'; // 3-star (blue)
+            default:
+                return 'bg-green-500 border-4 border-green-700 shadow-[0_0_10px_4px_rgba(0,255,0,0.7)]'; // 1- and 2-star (green)
+        }
+    };
+
+    // Toggle history display
     const toggleHistory = () => {
-        setIsHistoryVisible(!isHistoryVisible);
+        setShowHistory((prevState) => !prevState);
     };
 
     return (
-        <div className="min-h-screen flex justify-center items-center" style={{ backgroundImage: 'url("https://pa1.narvii.com/7742/e2079410e35198a15a6547222b38feefa188c800r1-960-539_hq.gif")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        <div className="relative w-full h-screen overflow-hidden">
+            {/* Full-screen background */}
+            <div
+                className="absolute inset-0 bg-cover bg-center bg-fixed"
+                style={{
+                    backgroundImage: 'url("https://pa1.narvii.com/7742/e2079410e35198a15a6547222b38feefa188c800r1-960-539_hq.gif")',
+                }}
+            ></div>
 
-            {/* Primogem count UI */}
-            <div className="absolute top-10 right-10 bg-gray-800 text-white p-4 rounded-lg shadow-lg">
-                <div className="flex items-center">
-                    <img src="https://example.com/primogem-icon.png" alt="Primogem Icon" className="w-8 h-8 mr-2" />
-                    <span className="text-xl font-bold">Primogems: {primogems}</span>
-                </div>
-            </div>
+            {/* Main content wrapper */}
+            <div className="relative flex flex-col justify-start items-center w-full h-full bg-black bg-opacity-60 overflow-hidden">
+                {/* Pull Tracker Component */}
+                <PullTracker
+                    primogems={primogems}
+                    wishCount={wishCount}
+                    rarityCounters={rarityCounters} // Pass the rarityCounters for tracking
+                    fourStarPity={fourStarPity}
+                    fiveStarPity={fiveStarPity}
+                />
 
-            {/* History Button */}
-            <div className="absolute top-10 left-10">
-                <button 
-                    onClick={toggleHistory} 
-                    className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:scale-105 transition-all duration-300 ease-in-out transform"
-                >
-                    History
-                </button>
-            </div>
+                {/* Pull Results */}
+                <div className="text-center p-8 bg-gray-800 bg-opacity-70 rounded-lg shadow-lg w-full md:w-2/3 lg:w-1/2 mb-auto">
+                    <h1 className="text-4xl font-bold mb-8 text-white">Genshin Impact Wish Simulator</h1>
+                    <h2 className="text-4xl font-bold mb-8 text-white">Weapon Banner</h2>
 
-            {/* History Modal or List */}
-            {isHistoryVisible && (
-                <div className="absolute top-28 left-10 bg-gray-800 text-white p-4 rounded-lg shadow-lg max-h-96 overflow-y-auto">
-                    <h2 className="text-xl font-bold mb-4">Pull History</h2>
-                    {pullHistory.length === 0 ? (
-                        <p>No pulls yet!</p>
-                    ) : (
-                        pullHistory.map((item, index) => (
-                            <div key={index} className="mb-4">
-                                <p>{item.rarity}-star {item.type} (ID: {item.id})</p>
-                                <img src={item.image} alt={item.id} className="w-24 h-24 object-cover mt-2" />
-                                <p className="text-sm">{item.description}</p>
-                            </div>
-                        ))
+                    {/* Pull button moved to the right side */}
+                    <div className="absolute right-10 bottom-24">
+                        <button
+                            onClick={pullWish}
+                            className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:scale-105 hover:from-blue-600 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all duration-300 ease-in-out transform"
+                            disabled={primogems < pullCost || isPulling}
+                        >
+                            {isPulling ? (
+                                <div className="animate-spin h-5 w-5 border-4 border-t-transparent border-blue-600 rounded-full"></div>
+                            ) : (
+                                `Pull (Cost: ${pullCost} Primogems)`
+                            )}
+                        </button>
+                    </div>
+
+                    {error && <div className="mt-4 text-red-500 font-semibold">{error}</div>}
+
+                    {/* Display pull results using PullResultDisplay */}
+                    {pullResult && (
+                        <PullResultDisplay
+                            pullResult={pullResult}
+                            previousPull={previousPull}
+                            getBorderColor={getBorderColor}
+                        />
                     )}
                 </div>
-            )}
-
-            {/* Pull Tracker UI */}
-            <div className="absolute top-28 right-10 bg-gray-800 text-white p-4 rounded-lg shadow-lg">
-                <h2 className="text-xl font-bold">Pull Tracker</h2>
-                <p>4-Star Pity: {fourStarPity}/10</p>
-                <p>5-Star Pity: {fiveStarPity}/80</p>
-            </div>
-
-            {/* Pull Button */}
-            <div className="absolute top-100 right-10 bg-gray-800 text-white p-4 rounded-lg shadow-lg">
-                <button onClick={handlePullWish} className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:scale-105 hover:from-blue-600 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all duration-300 ease-in-out transform" disabled={primogems < pullCost || isPulling}>
-                    Pull (Cost: {pullCost} Primogems)
-                </button>
-            </div>
-
-            {/* Main Pull UI */}
-            <div className="text-center p-8 bg-gray-800 bg-opacity-70 rounded-lg shadow-lg">
-                <h1 className="text-4xl font-bold mb-8 text-white">Genshin Impact Wish Simulator</h1>
-                <h2 className="text-4xl font-bold mb-8 text-white">Weapon Banner</h2>
-
-                {error && <div className="mt-4 text-red-500 font-semibold">{error}</div>}
-
-                {pullResult && (
-                    <div className="mt-6 bg-gray-700 p-6 rounded-lg shadow-md">
-                        <h3 className="text-xl font-semibold text-center text-white">
-                            You've pulled a {pullResult.rarity}-star {pullResult.type}!
-                        </h3>
-                        <p className="mt-2 text-center text-white">ID: {pullResult.id}</p>
-                        <div className="flex justify-center space-x-6 overflow-x-auto">
-                            {/* Current Pull */}
-                            <div className="flex-shrink-0 w-60">
-                                <img src={pullResult.image} alt={pullResult.id} className="w-full h-60 object-cover mx-auto mt-4" />
-                                <p className="mt-2 text-center text-white px-2 max-h-24 overflow-auto">{pullResult.description}</p>
-                            </div>
-
-                            {/* Previous pull */}
-                            {previousPull && (
-                                <div className="flex-shrink-0 w-60">
-                                    <img
-                                        src={previousPull.image}
-                                        alt={previousPull.id}
-                                        className="w-full h-60 object-cover mx-auto mt-4"
-                                    />
-                                    <p className="mt-2 text-center text-white px-2 max-h-24 overflow-auto">{previousPull.description}</p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
+                <nav className="bg-white p-4 rounded-lg shadow-lg mb-6">
+                    <ul className="flex space-x-4">
+                        <li>
+                            <Link
+                                to="/standard-banner"
+                                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600"
+                            >
+                                Standard Banner
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                to="/weapon-banner"
+                                className="bg-pink-500 text-white px-4 py-2 rounded-md hover:bg-slate-600"
+                            >
+                                Weapon Banner
+                            </Link>
+                        </li>
+                    </ul>
+                </nav>
+                {/* History Component */}
+                <History
+                    pullHistory={pullHistory}
+                    showHistory={showHistory}
+                    toggleHistory={toggleHistory}
+                    getBorderColor={getBorderColor}
+                />
             </div>
         </div>
     );
