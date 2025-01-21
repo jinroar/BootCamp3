@@ -1,4 +1,3 @@
-// StandardBanner.tsx
 import React, { useState, useEffect } from 'react';
 import { PullResult } from '../types';
 import { getAllCharacters, getAllWeapons, getRandomWeapon, getRandomCharacter } from '../utils';
@@ -17,7 +16,6 @@ interface RarityCounters {
 }
 
 export const StandardBanner: React.FC = () => {
-    // State variables
     const [error, setError] = useState<string | null>(null);
     const [wishCount, setWishCount] = useState<number>(0);
     const [pullHistory, setPullHistory] = useState<PullResult[]>([]);
@@ -38,7 +36,6 @@ export const StandardBanner: React.FC = () => {
     const [weaponPullResult, setWeaponPullResult] = useState<PullResult | null>(null);
     const pullCost = 160;
 
-    // Fetching data and syncing primogems with localStorage
     useEffect(() => {
         if (primogems <= 0) {
             setPrimogems(32000);
@@ -56,7 +53,6 @@ export const StandardBanner: React.FC = () => {
         localStorage.setItem('primogems', primogems.toString());
     }, [primogems]);
 
-    // Fetch characters and weapons
     const [allCharacters, setAllCharacters] = useState<PullResult[]>([]);
     const [allWeapons, setAllWeapons] = useState<PullResult[]>([]);
 
@@ -74,7 +70,6 @@ export const StandardBanner: React.FC = () => {
         fetchData();
     }, []);
 
-    // Pull function (wish simulation)
     const pullWish = async (): Promise<void> => {
         if (primogems < pullCost || isPulling) {
             setError("Not enough Primogems or already pulling!");
@@ -82,12 +77,11 @@ export const StandardBanner: React.FC = () => {
         }
         setIsPulling(true);
         setError(null);
-        setPrimogems((prev) => prev - pullCost); // Decrease primogems after pull
+        setPrimogems((prev) => prev - pullCost);
         setWishCount((prevCount) => prevCount + 1);
 
         let itemData: PullResult | null = null;
 
-        // Pull Logic
         if (isWeaponBanner) {
             itemData = await handleWeaponBannerPull();
             setWeaponPullResult(itemData);
@@ -104,7 +98,6 @@ export const StandardBanner: React.FC = () => {
         setIsPulling(false);
     };
 
-    // Handle pull logic for each banner
     const handleWeaponBannerPull = async () => {
         setWeaponFiveStarPity((prev) => prev + 1);
         setWeaponFourStarPity((prev) => prev + 1);
@@ -139,7 +132,6 @@ export const StandardBanner: React.FC = () => {
         return itemData;
     };
 
-    // Helper functions for random pulls
     const randomWeaponPull = () => {
         const pullOutcome = Math.random() * 100;
         if (pullOutcome <= 0.07) return getRandomWeapon(5);
@@ -154,11 +146,10 @@ export const StandardBanner: React.FC = () => {
         return getRandomWeapon(3);
     };
 
-    // Update pull history and counters
     const updatePullHistory = (itemData: PullResult) => {
         setPullHistory((prevHistory) => {
             const newHistory = [itemData, ...prevHistory];
-            return newHistory.slice(-250); 
+            return newHistory.slice(-250);
         });
     };
 
@@ -180,8 +171,7 @@ export const StandardBanner: React.FC = () => {
         setIsWeaponBanner(isWeapon);
     };
 
-    // StandardBanner.tsx
-    const getBorderColor = (rarity: number) => {
+    const getBorderColor = (rarity: number): string => {
         switch (rarity) {
             case 5:
                 return 'bg-yellow-500 border-4 border-yellow-700 shadow-[0_0_10px_4px_rgba(255,223,0,0.7)]'; // 5-star (gold/yellow)
@@ -195,43 +185,53 @@ export const StandardBanner: React.FC = () => {
     };
 
     return (
-        <div className="relative w-full h-screen overflow-hidden">
-            <Background />
-            <div className="relative flex flex-col justify-start items-center w-full h-full bg-black bg-opacity-60 overflow-hidden">
-                <PullTracker
-                    primogems={primogems}
-                    wishCount={wishCount}
-                    rarityCounters={rarityCounters}
-                    fourStarPity={isWeaponBanner ? weaponFourStarPity : standardFourStarPity}
-                    fiveStarPity={isWeaponBanner ? weaponFiveStarPity : standardFiveStarPity}
-                />
 
-                <div className="text-center p-8 bg-gray-800 bg-opacity-70 rounded-lg shadow-lg w-full md:w-2/3 lg:w-1/2 mb-auto">
-                    <h1 className="text-4xl font-bold mb-8 text-white">Genshin Impact Wish Simulator</h1>
-                    <h2 className="text-4xl font-bold mb-8 text-white">{isWeaponBanner ? "Weapon" : "Standard"} Banner</h2>
-          
-                    {/* BannerSwitch and PullButton */}
-                    <BannerSwitch isWeaponBanner={isWeaponBanner} toggleBanner={toggleBanner} />
+        <div className="relative w-full h-screen bg-black bg-opacity-80">
+            <div className="cursor-paddle">
+                {/* Background Component with absolute positioning */}
+                <Background />
+                <div className="relative z-10 flex flex-col items-center justify-center w-full h-full">
+                    {/* Main Banner Content */}
+                    <div className="w-full max-w-3xl p-6 bg-gray-800 bg-opacity-90 rounded-lg shadow-lg space-y-6">
+                        {/* Header */}
+                        <h1 className="text-3xl md:text-4xl font-bold text-white text-center">Genshin Impact Wish Simulator</h1>
 
-                    {/* Error Message */}
-                    <ErrorMessage error={error} />
-                    <PullButton
-                        isPulling={isPulling}
-                        pullCost={pullCost}
-                        primogems={primogems}
-                        onClick={pullWish}
-                    />
-                    {/* Display Pull Results */}
-                    {(isWeaponBanner ? weaponPullResult : standardPullResult) && (
-                        <PullResultDisplay pullResult={isWeaponBanner ? weaponPullResult : standardPullResult} getBorderColor={getBorderColor} />
-                    )}
+                        {/* BannerSwitch Component */}
+                        <div className="fixed top-5 sm:bottom-16 -right-56 transform -translate-x-1/2 z-20">
+                            <BannerSwitch isWeaponBanner={isWeaponBanner} toggleBanner={toggleBanner} />
+                        </div>
+                        {/* Error Message */}
+                        <ErrorMessage error={error} />
+
+                        {/* Pull Button */}
+                        <PullButton
+                            isPulling={isPulling}
+                            pullCost={pullCost}
+                            primogems={primogems}
+                            onClick={pullWish}
+                        />
+
+                        {/* Pull Result Display */}
+                        {(isWeaponBanner ? weaponPullResult : standardPullResult) && (
+                            <PullResultDisplay pullResult={isWeaponBanner ? weaponPullResult : standardPullResult} getBorderColor={getBorderColor} />
+                        )}
+
+                        {/* Pull Tracker */}
+                        <PullTracker
+                            primogems={primogems}
+                            wishCount={wishCount}
+                            rarityCounters={rarityCounters}
+                            fourStarPity={isWeaponBanner ? weaponFourStarPity : standardFourStarPity}
+                            fiveStarPity={isWeaponBanner ? weaponFiveStarPity : standardFiveStarPity}
+                        />
+                    </div>
+
+                    {/* History */}
+                    <History pullHistory={pullHistory} showHistory={showHistory} toggleHistory={toggleHistory} getBorderColor={getBorderColor} />
                 </div>
-
-                {/* History */}
-                <History pullHistory={pullHistory} showHistory={showHistory} toggleHistory={toggleHistory} getBorderColor={getBorderColor} />
             </div>
-            
         </div>
+
     );
 };
 

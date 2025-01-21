@@ -1,4 +1,3 @@
-// components/PullTracker.tsx
 import React from 'react';
 
 interface PullTrackerProps {
@@ -21,7 +20,7 @@ const PullTracker: React.FC<PullTrackerProps> = ({
     fiveStarPity
 }) => {
     return (
-        <div className="absolute top-10 right-10 bg-gray-800 text-white p-4 rounded-lg shadow-lg max-w-xs w-full">
+        <div className="fixed top-5 sm:top-0 right-1 bg-gray-800 text-white p-4 rounded-lg shadow-lg max-w-xs">
             <div className="text-xl mb-4 text-white">
                 Primogems: {primogems}
             </div>
@@ -30,7 +29,7 @@ const PullTracker: React.FC<PullTrackerProps> = ({
                 Number of pulls: {wishCount}
             </div>
 
-            <p>3-Star (including 1- and 2-star weapons): {rarityCounters.threeStar}</p>
+            <p>3-Star and below: {rarityCounters.threeStar}</p>
             <p>4-Star: {rarityCounters.fourStar}</p>
             <p>5-Star: {rarityCounters.fiveStar}</p>
             <p>4-Star Pity: {fourStarPity}/10</p>

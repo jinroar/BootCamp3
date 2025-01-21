@@ -26,36 +26,41 @@ const PullResults: React.FC<PullResultDisplayProps> = ({ pullResult, getBorderCo
         ));
         return stars;
     };
-    
+
     return (
-        <div className="mt-6 bg-gray-700 p-6 rounded-lg shadow-md">
+        <div className="bg-gray-700 rounded-lg shadow-md ">
             {/* Render stars with animation */}
-            <h3 className="text-2xl font-bold text-center text-white tracking-wide font-serif">
-                {/* Display animated stars */}
-                pulled a {renderStars()} {pullResult.type}
-            </h3>
-            {/* Updated ID format: Uppercase and bold */}
-            <p className="mt-2 text-center text-white text-lg font-bold tracking-wide uppercase">
-                {formattedId}
-            </p>
-            <div className="flex justify-center space-x-6 overflow-x-auto">
+            <div className="flex justify-center space-x-6  ">
                 {/* Container that holds both image and description */}
-                <div className="flex-shrink-0 w-60">
+                <div className="flex-shrink-0 w-60 p-6">
                     {/* Box behind the image with dynamic background color based on rarity */}
-                    <div className={`p-4 rounded-lg ${getBorderColor(parseInt(pullResult.rarity))}`}>
+                    <div
+                        className={`p-4 rounded-lg ${getBorderColor(parseInt(pullResult.rarity))} animate-highlight-draw`}
+                    >
                         <img
                             src={pullResult.image || "https://i.kym-cdn.com/entries/icons/mobile/000/049/004/lebronsunshinecover.jpg"}
                             alt={pullResult.id}
-                            className="w-full h-60 object-cover mx-auto mt-4"
+                            className="w-full h-full object-contain"
                         />
+
                     </div>
                 </div>
                 {/* Description with the same width and height as the image */}
-                <div className="flex-shrink-0 w-60 h-60">
-                    <div className="mt-4 p-4 bg-opacity-80 bg-gray-900 rounded-lg shadow-lg h-full">
+                <div className="flex-shrink-0 w-3/6 h-1/2 p-6">
+                    <div className="mt-4 bg-opacity-80 bg-gray-900 rounded-lg shadow-lg h-full">
+                        <p className=" mb-4 text-center text-white text-lg font-bold tracking-wide uppercase">
+                            {formattedId}
+                        </p>
                         <p className="text-white text-center text-sm font-semibold tracking-wide px-2 max-h-full overflow-y-auto">
                             {pullResult.description}
                         </p>
+                        <h3 className="text-2xl font-bold text-center text-white tracking-wide font-serif">
+                            {/* Display animated stars */}
+                            {renderStars()} 
+                        </h3>
+                        <h3 className="text-2xl font-bold text-center text-white tracking-wide font-serif">
+                        {pullResult.type}
+                        </h3>
                     </div>
                 </div>
             </div>
